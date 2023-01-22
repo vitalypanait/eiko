@@ -1,0 +1,7 @@
+api_test:
+    resource: ../../src/Module/Billing/Application/Http/
+    type: annotation
+
+auth:
+    resource: ../../src/Module/Core/Application/Http/
+    type: annotation

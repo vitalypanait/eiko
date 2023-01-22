@@ -1,0 +1,6 @@
+app_logout:
+  path: /logout
+  methods: GET
+
+jwt_auth:
+  path: /auth
