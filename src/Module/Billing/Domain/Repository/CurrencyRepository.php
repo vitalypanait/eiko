@@ -11,4 +11,6 @@ interface CurrencyRepository
     public function save(Currency $currency): void;
 
     public function catalogue(): array;
+
+    public function getById(int $id): Currency;
 }

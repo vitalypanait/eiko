@@ -23,6 +23,17 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
+    App\Module\Common\Infrastructure\Request\RequestResolver:
+        arguments:
+            - '@validator'
+        tags:
+            - { name: controller.request_value_resolver, priority: 50 }
+
+    acme_api.event.authentication_success_listener:
+        class: App\Module\Core\Listener\AuthenticationSuccessListener
+        tags:
+            - { name: kernel.event_listener, event: lexik_jwt_authentication.on_authentication_success, method: onAuthenticationSuccessResponse }
+
     _instanceof:
         App\Module\Common\Command\CommandHandler:
             tags:

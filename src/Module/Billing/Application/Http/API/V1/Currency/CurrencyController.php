@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Module\Billing\Application\Http\API\V1\Currency;
 
+use App\Module\Billing\Application\Http\API\V1\Currency\Request\CreateRequest;
 use App\Module\Billing\Application\UseCase\CurrencyCreate\CurrencyCreateCommand;
 use App\Module\Billing\Domain\Entity\Currency;
 use App\Module\Billing\Domain\Repository\CurrencyRepository;
@@ -37,10 +38,12 @@ class CurrencyController extends AbstractController
         '/api/v1/currencies',
         methods: ['POST']
     )]
-    public function create(): Response
+    public function create(CreateRequest $request): Response
     {
-        $this->commandBus->execute(new CurrencyCreateCommand('EUR', '€', 'Еврик'));
+        $this->commandBus->execute(
+            new CurrencyCreateCommand($request->getCode(), $request->getSymbol(), $request->getTitle())
+        );
 
-        return new Response();
+        return $this->json([]);
     }
 }

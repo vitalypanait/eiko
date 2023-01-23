@@ -4,28 +4,44 @@ declare(strict_types=1);
 
 namespace App\Module\Billing\Domain\Entity;
 
-class Account
+use JsonSerializable;
+
+class Account implements JsonSerializable
 {
     private ?int $id;
 
     public function __construct(
+        private readonly int $userId,
         private Currency $currency,
         private string $name,
         private string $color
     ) {}
 
-    public function getCurrency(): Currency
+    public function jsonSerialize(): mixed
     {
-        return $this->currency;
+        return [
+            'id' => $this->id,
+            'userId' => $this->userId,
+            'name' => $this->name,
+            'color' => $this->color,
+            'currency' => $this->currency->jsonSerialize()
+        ];
     }
 
-    public function getName(): string
+    public function getUserId(): int
     {
-        return $this->name;
+        return $this->userId;
     }
 
-    public function getColor(): string
+    public function update(string $name, string $color, Currency $currency): void
     {
-        return $this->color;
+        $this->name = $name;
+        $this->color = $color;
+        $this->currency = $currency;
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
     }
 }

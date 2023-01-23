@@ -29,4 +29,15 @@ class CurrencyRepositoryImpl extends ServiceEntityRepository implements Currency
             ->getQuery()
             ->getResult();
     }
+
+    public function getById(int $id): Currency
+    {
+        return $this->getEntityManager()->createQueryBuilder()
+            ->select('c')
+            ->from(Currency::class, 'c')
+            ->andWhere('c.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getSingleResult();
+    }
 }

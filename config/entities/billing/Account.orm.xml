@@ -6,10 +6,18 @@
         <id name="id" type="integer" column="id">
             <generator strategy="AUTO"/>
         </id>
+        <field name="userId" type="integer">
+            <options>
+                <option name="unsigned">true</option>
+            </options>
+        </field>
         <field name="name"/>
         <field name="color"/>
         <many-to-one field="currency" target-entity="App\Module\Billing\Domain\Entity\Currency">
             <join-column name="currency_id" nullable="false"/>
         </many-to-one>
+        <indexes>
+            <index columns="userId" name="userId"/>
+        </indexes>
     </entity>
 </doctrine-mapping>
