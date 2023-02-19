@@ -2,13 +2,13 @@
 
 namespace App\Module\Common\Infrastructure\Request;
 
+use App\Module\Common\Infrastructure\Exception\BadRequestException;
 use Exception;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 use Symfony\Component\Serializer\Exception\NotEncodableValueException;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -23,6 +23,9 @@ class RequestResolver implements ValueResolverInterface
         $this->serializer = $serializer;
     }
 
+    /**
+     * @throws BadRequestException
+     */
     public function resolve(Request $request, ArgumentMetadata $argument): array
     {
         $argumentType = $argument->getType();
@@ -40,7 +43,7 @@ class RequestResolver implements ValueResolverInterface
                 $request->getContent(),
                 $argument->getType(),
                 'json',
-                [ObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true]
+                [AbstractObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true]
             );
         } catch (NotEncodableValueException $e) {
             throw new BadRequestException('Error in json body: ' . $e->getMessage());
@@ -51,10 +54,13 @@ class RequestResolver implements ValueResolverInterface
         $errors = $this->validator->validate($object);
 
         if (count($errors) > 0) {
-//            $badRequestException = new BadRequestException();
-//            $badRequestException->addConstraintViolationErrors($errors);
+            $exception = new BadRequestException();
 
-            throw new BadRequestException();
+            foreach ($errors as $error) {
+                $exception->addError($error->getMessage(), $error->getCode());
+            }
+
+            throw $exception;
         }
 
         return [$object];
